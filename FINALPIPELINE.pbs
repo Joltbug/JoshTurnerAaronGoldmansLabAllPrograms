@@ -1,0 +1,46 @@
+#! /bin/bash
+#PBS -j oe
+#PBS -o BlastANDParserout
+#PBS -N BlastingInToTheParser
+#PBS -l nodes=1:ppn=10
+#PBS -q long
+
+cd NCBI/COGTEST
+
+echo "COGTEST\n$HOME/NCBI/COGTEST">config.txt
+
+while read id; do
+	blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/$id -query /home/students/jturner2/NCBI/COGTEST/archea -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Archea_$id_BlastR
+	sort -r -t \t -k 0 -o COGTEST_Archea_$id_BlastR
+done <archeaBlasts.txt
+
+while read id; do
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/$id  -query /home/students/jturner2/NCBI/COGTEST/bacteria -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Bacteria_$id_BlastR
+        sort -r -t \t -k 0 -o COGTEST_Bacteria_$id_BlastR
+done <bacteriaBlasts.txt
+
+while read id; do
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/$id  -query /home/students/jturner2/NCBI/COGTEST/eukarya -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Eukaryota_$id_Blas$
+        sort -r -t \t -k 0 -o COGTEST_Eukaryota_$id_BlastR
+done <eukaryaBlasts.txt
+
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/nr.Euglenoza_Acc_Mitochondrion.fa  -query /home/students/jturner2/NCBI/COGTEST/eukarya -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Mitochondrion_Euglenozoa_BlastR
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/nr.Amoebozoa_Acc_Mitochondrion.fa  -query /home/students/jturner2/NCBI/COGTEST/eukarya -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Mitochondrion_Amoebozoa_BlastR
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/nr.Opisthokonta_Acc_Mitochondrion.fa -query /home/students/jturner2/NCBI/COGTEST/eukarya -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Mitochondrion_Opisthokonta_BlastR
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/nr.Viridiplantae_Acc_Mitochondrion.fa -query /home/students/jturner2/NCBI/COGTEST/eukarya -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Mitochondrion_Viridiplantae_BlastR
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/nr.Rhodophyta_Acc_Plastid.fa -query /home/students/jturner2/NCBI/COGTEST/eukarya -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Plastid_Rhodophyta_BlastR
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/nr.Rhizaria_Acc_Plastid.fa -query /home/students/jturner2/NCBI/COGTEST/eukarya -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Plastid_Rhizaria_BlastR
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/nr.Viridiplantae_Acc_Plastid.fa -query /home/students/jturner2/NCBI/COGTEST/eukarya -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Plastid_Viridiplantae_BlastR
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/Archea -query /home/students/jturner2/NCBI/COGTEST/bacteria -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Archea_recipBlast_BlastR
+        blastp -outfmt "6 qcovs staxids sseqid" -max_target_seqs 100 -db /home/students/jturner2/NCBI/SpecialDBS/Bacteria  -query /home/students/jturner2/NCBI/COGTEST/archea -evalue 1e-3 -out /home/students/jturner2/NCBI/COGTEST/COGTEST_Bacteria_recipBlast_BlastR
+	
+export PATH=/home/students/jturner2/python/Python-2.7.11:$PATH
+python ReplaceTaxIDsBLASTwithGenusSpecies.py
+./BlastResultFeb5
+
+awk '{print "COGTEST"$0}' resultsList.txt >resultslist
+
+while read id; do
+	head $id | awk '{print $2}' >Fixed_$id 
+	blastdbcmd -db $HOME/NCBI/NR/nr -dbtype prot -entry_batch Fixed_$id
+done < resultsList
