@@ -3,7 +3,7 @@ This is a repository of all of the programs that I have written while in Aaron's
 
 JOSH TURNER - AARON GOLDMAN'S LAB - ALL PROGRAMS DOCUMENTATION
 
-	This is a guide to all of the programs that I have written while in Aaron's lab, including methods of use, original purpose, and any other info. Note that many of these are incredibly specific, and thus may be more helpful as a jumping off point rather than simply using them. I have included pbs scripts if they have a greater function than simply running a program or downloading information.
+This is a guide to all of the programs that I have written while in Aaron's lab, including methods of use, original purpose, and any other info. Note that many of these are incredibly specific, and thus may be more helpful as a jumping off point rather than simply using them. I have included pbs scripts if they have a greater function than simply running a program or downloading information.
 
 Contents:
 
